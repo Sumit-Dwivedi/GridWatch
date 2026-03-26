@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
 import { config } from './config.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -13,6 +14,8 @@ import sensorsRouter from './modules/sensors/sensors.routes.js';
 import { startReadingProcessor } from './workers/readingProcessor.js';
 import { startSilenceDetector } from './scheduler/silenceDetector.js';
 import { startEscalationScheduler } from './scheduler/escalationScheduler.js';
+import { setupWebSocketServer } from './realtime/wsServer.js';
+import { startOutboxPublisher } from './workers/outboxPublisher.js';
 import './shared/types.js';
 import './db/client.js';
 
@@ -49,11 +52,15 @@ app.use('/dashboard', dashboardRouter);    // /dashboard/sensors
 // Error handler (must be last)
 app.use(errorHandler);
 
-const server = app.listen(config.port, () => {
+const server = http.createServer(app);
+setupWebSocketServer(server);
+
+server.listen(config.port, () => {
   console.log(`GridWatch API running on port ${config.port}`);
   startReadingProcessor();
   startSilenceDetector();
   startEscalationScheduler();
+  startOutboxPublisher();
 });
 
 export { app, server };
