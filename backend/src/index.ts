@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { authenticateToken } from './middleware/auth.js';
 import authRouter from './modules/auth/auth.routes.js';
 import ingestRouter from './modules/ingest/ingest.routes.js';
+import alertsRouter from './modules/alerts/alerts.routes.js';
 import { startReadingProcessor } from './workers/readingProcessor.js';
 import { startSilenceDetector } from './scheduler/silenceDetector.js';
 import { startEscalationScheduler } from './scheduler/escalationScheduler.js';
@@ -35,6 +36,7 @@ app.get('/health', (_req, res) => {
 // Routes
 app.use('/auth', authRouter);
 app.use('/ingest', ingestRouter);
+app.use('/alerts', alertsRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);
