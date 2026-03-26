@@ -1,29 +1,28 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import { Layout } from './components/Layout';
+import { LoginPage } from './features/auth/LoginPage';
+import { DashboardPage } from './features/dashboard/DashboardPage';
+import { AlertsPage } from './features/alerts/AlertsPage';
+import { SensorDetailPage } from './features/sensors/SensorDetailPage';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div className="flex items-center justify-center min-h-screen text-gray-500">Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
 
 function App() {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/login" element={
-        <div className="flex items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold">Login Page — Phase 11</h1>
-        </div>
-      } />
-      <Route path="/dashboard" element={
-        <div className="flex items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold">Dashboard — Phase 11</h1>
-        </div>
-      } />
-      <Route path="/alerts" element={
-        <div className="flex items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold">Alerts — Phase 11</h1>
-        </div>
-      } />
-      <Route path="/sensors/:id" element={
-        <div className="flex items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold">Sensor Detail — Phase 11</h1>
-        </div>
-      } />
+      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/alerts" element={<AlertsPage />} />
+        <Route path="/sensors/:id" element={<SensorDetailPage />} />
+      </Route>
     </Routes>
   );
 }
