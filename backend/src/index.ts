@@ -6,6 +6,10 @@ import { authenticateToken } from './middleware/auth.js';
 import authRouter from './modules/auth/auth.routes.js';
 import ingestRouter from './modules/ingest/ingest.routes.js';
 import alertsRouter from './modules/alerts/alerts.routes.js';
+import suppressionsRouter from './modules/suppressions/suppressions.routes.js';
+import historyRouter from './modules/history/history.routes.js';
+import dashboardRouter from './modules/dashboard/dashboard.routes.js';
+import sensorsRouter from './modules/sensors/sensors.routes.js';
 import { startReadingProcessor } from './workers/readingProcessor.js';
 import { startSilenceDetector } from './scheduler/silenceDetector.js';
 import { startEscalationScheduler } from './scheduler/escalationScheduler.js';
@@ -37,6 +41,10 @@ app.get('/health', (_req, res) => {
 app.use('/auth', authRouter);
 app.use('/ingest', ingestRouter);
 app.use('/alerts', alertsRouter);
+app.use('/sensors', suppressionsRouter);   // /sensors/:sensorId/suppressions
+app.use('/sensors', historyRouter);        // /sensors/:sensorId/history
+app.use('/sensors', sensorsRouter);        // /sensors/:sensorId (must be after sub-routes)
+app.use('/dashboard', dashboardRouter);    // /dashboard/sensors
 
 // Error handler (must be last)
 app.use(errorHandler);
